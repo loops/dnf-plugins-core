@@ -101,6 +101,11 @@ class VersionLock(dnf.Plugin):
         if locked_names:
             all_versions = self.base.sack.query().filter(name__glob=list(locked_names))
             other_versions = all_versions.difference(locked_query)
+            excluded = list(set([str(x) for x in other_versions.difference(excludes_query)]))
+            if excluded:
+               print("Available packages ignored because of versionlock: ")
+               for pkg in excluded:
+                 print("  ", pkg)
             excludes_query = excludes_query.union(other_versions)
 
         if excludes_query:
